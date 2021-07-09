@@ -1,3 +1,6 @@
+from numpy import pi
+
+
 class Simplex:
 
   def __init__(self, n, m, matrix):
@@ -12,7 +15,6 @@ class Simplex:
   def toCanonical(self):
     print(self.matrix)
 
-
 #COISAS DO SIMPLEX
 #negativar a primeira linha da matriz
 #ver se tem negativo no b, ver se linha é toda negativa
@@ -24,14 +26,24 @@ class Simplex:
     
     pivotColumn = self.multiplyRow(0, -1)
 
-    if pivotColumn == None: print('nao tem numero negativo no c')
+    while True:
+      
+      pivotColumn = self.getPivotColumn()
+      if pivotColumn == None: 
+        print('nao tem numero negativo no c')
+        break
 
-    #decidindo qual vai ser o pivo
-    pivotRow = self.getPivotRow(pivotColumn)
-    if pivotRow == None: print('nao tem nao-negativos na coluna')
+      #decidindo qual vai ser o pivo
+      pivotRow = self.getPivotRow(pivotColumn)
+      if pivotRow == None: 
+        print('nao tem nao-negativos na coluna')
+        break
 
-    self.iteration(pivotRow, pivotColumn)
+      # while(self.keepPivoting()):
+      self.iteration(pivotRow, pivotColumn)
     
+    print(self.matrix)
+
   
   def multiplyRow(self, index, multiplier):
     #multiplicando c por -1 e pegando o index da coluna pra pivotar
@@ -42,10 +54,18 @@ class Simplex:
         self.matrix[index][i] = self.matrix[index][i] * multiplier
         if(self.matrix[index][i] < 0 and i >= self.n and pivotIndex == None):
           pivotIndex = i
-    
-    # print(self.matrix[index][pivotIndex])
 
     return pivotIndex
+  
+  def pivotingRow(self, index, index2, multiplier):
+    for i in range(self.columnSize):
+      self.matrix[index][i] = self.matrix[index][i] + ( multiplier * self.matrix[index2][i])
+  
+  def getPivotColumn(self):
+    for i in range(self.columnSize):
+      if(self.matrix[0][i] < 0 and i >= self.n):
+        return i
+    return None
 
   def getPivotRow(self, column):
     lowerRatio = float('inf')
@@ -70,21 +90,12 @@ class Simplex:
     print(row, column)
     print(self.matrix)
     for i in range(self.n + 1):
-      
-      if i == row and pivot != 1: #linha do pivo
-        self.multiplyRow(row, 1/pivot)
-      
+      if i == row : continue #linha do pivo 
       else: #zerando as outras
         if self.matrix[i][column] != 0: 
           self.pivotingRow(i, row, (-1*self.matrix[i][column])/pivot)
 
-    print(self.matrix)
+    if pivot != 1:
+      self.multiplyRow(row, 1/pivot)
 
-  def pivotingRow(self, index, index2, multiplier):
-    for i in range(self.columnSize):
-      if(self.matrix[index][i] != 0):
-        self.matrix[index][i] = self.matrix[index][i] + ( multiplier * self.matrix[index2][i])
-    
-# NEXT STEPSSSSSSS
-#TERMINAR A PIVOTAÇÃO, ZERANDO OS NUMEROS DE CIMA E DE BAIXO DO PIVO
-#terminar pivotação
+    # print(self.matrix)
