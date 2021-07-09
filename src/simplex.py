@@ -20,7 +20,7 @@ class Simplex:
 #sabendo a coluna que vai ser pivotada, dividir todos os itens pelo último numero da linha
 #pegar o menor e pivotar
 
-  def runSimplex(self):
+  def run(self):
     
     pivotColumn = self.multiplyRow(0, -1)
 

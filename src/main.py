@@ -1,5 +1,5 @@
 import numpy as np
-from functions import Simplex
+from simplex import Simplex
 #n == linhas
 #m = restricoes
 #m+1 total de colunas
@@ -33,4 +33,4 @@ teste = np.array([
 
 simplex = Simplex(3, 3, teste)
 
-simplex.runSimplex()
+simplex.run()
