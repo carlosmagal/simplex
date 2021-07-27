@@ -1,19 +1,38 @@
-from numpy import pi
-
+import numpy as np
 
 class Simplex:
 
-  def __init__(self, n, m, matrix):
+  def __init__(self, n, m, matrix, matrixAuxiliar):
     self.n = n
     self.m = m
     self.matrix = matrix 
     self.columnSize = m + n + 1
+    self.columnSizeAuxiliar = m + n + 1
+    self.matrixAuxiliar = matrixAuxiliar
     
   def isCanonical(tableau):
     return True
 
   def toCanonical(self):
     print(self.matrix)
+
+  def runAuxiliar(self):
+    
+    while True:
+      
+      pivotColumn = self.getPivotColumn()
+      if pivotColumn == None: 
+        if(self.matrixAuxiliar[0][self.columnSizeAuxiliar-1] == 0):
+          print('deu bom')
+        break
+
+      #decidindo qual vai ser o pivo
+      pivotRow = self.getPivotRow(pivotColumn)
+      if pivotRow == None: 
+        print('nao tem nao-negativos na coluna')
+        break
+
+      self.iteration(pivotRow, pivotColumn)
 
 #COISAS DO SIMPLEX
 #negativar a primeira linha da matriz
@@ -24,7 +43,7 @@ class Simplex:
 
   def run(self):
     
-    pivotColumn = self.multiplyRow(0, -1)
+    # pivotColumn = self.multiplyRow(0, -1)
 
     while True:
       
@@ -39,7 +58,6 @@ class Simplex:
         print('nao tem nao-negativos na coluna')
         break
 
-      # while(self.keepPivoting()):
       self.iteration(pivotRow, pivotColumn)
     
     print(self.matrix)
@@ -64,6 +82,7 @@ class Simplex:
   def getPivotColumn(self):
     for i in range(self.columnSize):
       if(self.matrix[0][i] < 0 and i >= self.n):
+        print(self.matrix[0][i])
         return i
     return None
 
@@ -99,3 +118,41 @@ class Simplex:
       self.multiplyRow(row, 1/pivot)
 
     # print(self.matrix)
+
+
+
+
+def auxiliar(n, m, matrix):
+
+  for i in range(n):#multiplicando por -1, qnd b<0
+    if(matrix[i][m] < 0):
+      for j in range(m+1):
+        matrix[i][j] = matrix[i][j] * -1
+
+  # print(matrix)
+  # print('------------------------')
+
+  matrixWithIdentity = np.insert(matrix, m, np.identity(n), axis=1)
+
+  arrayC = np.append(np.zeros(m),np.full((n), 1))
+  arrayC = np.append(np.zeros(n), arrayC)#colocando n zeros antes do c
+  arrayC = np.append(arrayC, [0])#colocando um 0 no final do c
+
+  matrixAuxiliar = np.array(arrayC)
+
+  identity = np.identity(n)
+
+  for i in range(n):#tableau
+    matrixAuxiliar = np.vstack([matrixAuxiliar, np.concatenate((identity[i], matrixWithIdentity[i]))])
+
+  # print(matrixAuxiliar)
+
+
+  for i in range(n+n+m+1):#pivoteando a primeira linha, pra deixar canonico
+    for j in range(n+1):
+      if(j == 0): continue
+      matrixAuxiliar[0][i] = matrixAuxiliar[0][i] - matrixAuxiliar[j][i]
+
+  # print(matrixAuxiliar)
+
+  return matrixAuxiliar
