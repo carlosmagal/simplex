@@ -7,8 +7,8 @@ class Simplex:
     self.m = m
     self.matrix = matrix 
     self.columnSize = m + n + 1
-    self.columnSizeAuxiliar = m + n + 1
     self.matrixAuxiliar = matrixAuxiliar
+    self.columnSizeAuxiliar = m + n + 1
     
   def isCanonical(tableau):
     return True
@@ -22,15 +22,16 @@ class Simplex:
       
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
-        if(self.matrixAuxiliar[0][self.columnSizeAuxiliar-1] == 0):
-          print('deu bom')
-        break
+        if(self.matrix[0][self.columnSizeAuxiliar-1] == 0):
+          return True
+        else:
+          return False
 
       #decidindo qual vai ser o pivo
       pivotRow = self.getPivotRow(pivotColumn)
       if pivotRow == None: 
         print('nao tem nao-negativos na coluna')
-        break
+        return False
 
       self.iteration(pivotRow, pivotColumn)
 
@@ -43,7 +44,7 @@ class Simplex:
 
   def run(self):
     
-    # pivotColumn = self.multiplyRow(0, -1)
+    pivotColumn = self.multiplyRow(0, -1)
 
     while True:
       
@@ -80,7 +81,7 @@ class Simplex:
       self.matrix[index][i] = self.matrix[index][i] + ( multiplier * self.matrix[index2][i])
   
   def getPivotColumn(self):
-    for i in range(self.columnSize):
+    for i in range(self.columnSize-1):
       if(self.matrix[0][i] < 0 and i >= self.n):
         print(self.matrix[0][i])
         return i
@@ -147,7 +148,6 @@ def auxiliar(n, m, matrix):
 
   # print(matrixAuxiliar)
 
-
   for i in range(n+n+m+1):#pivoteando a primeira linha, pra deixar canonico
     for j in range(n+1):
       if(j == 0): continue
@@ -156,3 +156,6 @@ def auxiliar(n, m, matrix):
   # print(matrixAuxiliar)
 
   return matrixAuxiliar
+
+
+

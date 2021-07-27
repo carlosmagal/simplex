@@ -23,12 +23,76 @@ def getInput():
   for i in range(n):#tableau
     matrix = np.vstack([matrix, np.concatenate((identity[i],matrixInput[i]))])
 
-  return n, m, matrix, matrixAuxiliar
+  return n, m, matrix, matrixAuxiliar, arrayC
 
-n, m, matrix, matrixAuxiliar = getInput()
-# simplex = Simplex(n, m, matrix, matrixAuxiliar)
+n, m, matrix, matrixAuxiliar, arrayC = getInput()
 
-simplex = Simplex(n, m+n, matrixAuxiliar,matrix)
+simplex1 = Simplex(n, m+n, matrixAuxiliar, matrix)# simplex fase 1, monta a auxiliar
+
+#######################################
+def pivotingAuxiliar(matrix, n, m, column):
+  if(matrix[0][column] == 0): return matrix
+
+  for i in range(1, n+1):
+    if(matrix[i][column] == 1):#pegando index da linha do pivo
+      multiplier = -1 * matrix[0][column]
+      for j in range(n+m+1):
+        matrix[0][j] = matrix[0][j] + (multiplier*matrix[i][j])
+        
+  
+  return matrix
+##################################
+
+
+# simplex.runAuxiliar()
+if(simplex1.runAuxiliar()):
+  print('tem zero no bagui')
+	# pegar a auxiliar, retirar a matriz que foi colocada no meio(retirar a partir da m, n vezes)
+	# trocar a linha c pela original
+	# pivotear a primeira linha, para ficar 0 em cima das bases
+
+  print(matrixAuxiliar)
+
+  for i in range(m+n, n+n+m):
+    print(i)
+    matrixAuxiliar = np.delete(matrixAuxiliar, n+m, 1)
+
+  print(matrixAuxiliar)
+
+  matrixAuxiliar[0] = arrayC # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
+  print(matrixAuxiliar)
+
+  #BO
+  #checar, a partir da linha n, quais colunas devem ser pivoteadas, pular a ultima 
+	
+
+  #pego a matriz a partir da linha n, e vejo a coluna que tem um '1' e n-1 '0'
+  maxZeros = n-1
+  maxOnes = 1
+  for i in range(n, n+m+1):
+    for j in range(1,n+1):
+      if matrixAuxiliar[j][i] == 0:
+        maxZeros = maxZeros-1
+      elif matrixAuxiliar[j][i] == 1:
+        maxOnes = maxOnes-1
+      else:
+        break
+    else:
+      if maxOnes == 0 and maxZeros == 0:
+        print('pivotar coluna ', i)
+        matrixAuxiliar = pivotingAuxiliar(matrixAuxiliar, n, m, i)
+      maxZeros = n-1
+      maxOnes = 1
+
+  print(matrixAuxiliar)
+  simplex2 = Simplex(n, m, matrixAuxiliar, matrixAuxiliar)
+  simplex2.run()
+
+else:
+  print('inviavel')
+
+
+
 
 
 # teste = np.array([
@@ -82,7 +146,3 @@ simplex = Simplex(n, m+n, matrixAuxiliar,matrix)
 #   [0. ,0. , 0. ,1. , 1., 1. , 1., -1.],
 # ])#inviavel 
 # simplex = Simplex(8, 6, teste)
-
-simplex.runAuxiliar()
-
-
