@@ -1,5 +1,5 @@
 import numpy as np
-from simplex import Simplex, auxiliar
+from simplex import Simplex, auxiliar, printOtimo
 #n == linhas
 #m = restricoes
 #m+1 total de colunas
@@ -25,15 +25,11 @@ def getInput():
 
   return n, m, matrix, matrixAuxiliar, arrayC
 
-n, m, matrix, matrixAuxiliar, arrayC = getInput()
 
-simplex1 = Simplex(n, m+n, matrixAuxiliar, matrix)# simplex fase 1, monta a auxiliar
-
-#######################################
 def pivotingAuxiliar(matrix, n, m, column):
   if(matrix[0][column] == 0): return matrix
 
-  for i in range(1, n+1):
+  for i in range( n+1):
     if(matrix[i][column] == 1):#pegando index da linha do pivo
       multiplier = -1 * matrix[0][column]
       for j in range(n+m+1):
@@ -43,32 +39,37 @@ def pivotingAuxiliar(matrix, n, m, column):
   return matrix
 ##################################
 
+n, m, matrix, matrixAuxiliar, arrayC = getInput()
 
-# simplex.runAuxiliar()
+simplex1 = Simplex(n, m+n, matrixAuxiliar, matrix)# simplex fase 1, monta a auxiliar
+
 if(simplex1.runAuxiliar()):
   print('tem zero no bagui')
 	# pegar a auxiliar, retirar a matriz que foi colocada no meio(retirar a partir da m, n vezes)
 	# trocar a linha c pela original
 	# pivotear a primeira linha, para ficar 0 em cima das bases
 
-  print(matrixAuxiliar)
-
   for i in range(m+n, n+n+m):
-    print(i)
     matrixAuxiliar = np.delete(matrixAuxiliar, n+m, 1)
 
-  print(matrixAuxiliar)
+  for i in range(n):
+    matrixAuxiliar = np.delete(matrixAuxiliar, 0, 1)
 
-  matrixAuxiliar[0] = arrayC*-1 # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
-  print(matrixAuxiliar)
+  matrixAuxiliar = np.append(np.vstack([np.zeros(n), np.identity(n)]), matrixAuxiliar, axis=1)
+  # quit()
 
-  #BO
-  #checar, a partir da linha n, quais colunas devem ser pivoteadas, pular a ultima 
-	
+  print(matrixAuxiliar[0])
+  arrayC = arrayC * -1
+  # arrayC[0:n] = matrixAuxiliar[0][0:n] # passando VERO pro c original
+  print(arrayC)
+
+  matrixAuxiliar[0] = arrayC # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
+  print(matrixAuxiliar)
 
   #pego a matriz a partir da linha n, e vejo a coluna que tem um '1' e n-1 '0'
   maxZeros = n-1
   maxOnes = 1
+  
   for i in range(n, n+m+1):
     for j in range(1,n+1):
       if matrixAuxiliar[j][i] == 0:
@@ -87,63 +88,21 @@ if(simplex1.runAuxiliar()):
   print(matrixAuxiliar)
   # quit()
   simplex2 = Simplex(n, m, matrixAuxiliar, matrixAuxiliar)
-  simplex2.run()
 
-  print('otima')
-  print(matrixAuxiliar[0][n+m])
+  if simplex2.run():
+  
+    print('otima')
+    print(np.around(matrixAuxiliar[0][n+m],7))
+    # print(otimo.transpose())
+    printOtimo(matrixAuxiliar, n, m)
+    print(np.around(matrixAuxiliar[0][0:n],7))
+
+  else: 
+    print('ilimitada')
+    printOtimo(matrixAuxiliar, n, m)
+    print(np.around(matrixAuxiliar[0][0:n],7))
+
 
 else:
   print('inviavel')
-  print(np.around(matrixAuxiliar,2))
-
-# teste = np.array([
-#   [0. ,0. , 0. ,2. ,4. ,8. , 0.],
-#   [1. ,0. , 0. ,1. ,0. ,0. , 7.],
-#   [0. ,1. , 0. ,2. ,1. ,0. , 4.],
-#   [0. ,0. , 1. ,1. ,0. ,1. , 9.],
-# ])
-# simplex = Simplex(3, 3, teste)
-
-# teste = np.array([
-#   [0. ,0. ,0. ,3. ,-7. , 0. ,-8.],
-#   [1. ,0. ,1. ,2. ,-2. , 0. ,2. ],
-#   [0. ,1. ,0. ,1. ,3. , 1. ,5. ],
-# ]) 
-# simplex = Simplex(2, 4, teste)
-
-
-# teste = np.array([
-#   [0. ,0. , 0. ,2. ,4. ,8. , 0.],
-#   [1. ,0. , 0. ,1. ,0. ,0. , 1.],
-#   [0. ,1. , 0. ,0. ,1. ,0. , 1.],
-#   [0. ,0. , 1. ,0. ,0. ,1. , 1.],
-# ])#ótimo 14
-# simplex = Simplex(3, 3, teste)
-
-# teste = np.array([
-#   [0. ,0. , 0. ,0. , -3., -4. , 5., -5., 0.],
-#   [1. ,0. , 0. ,0. , 1., 1. , 0., 0., 5.],
-#   [0. ,1. , 0. ,0. , -1., 0. , -5. , 5., -10.],
-#   [0. ,0. , 1. ,0. , 2., 1. , 1., -1., 10.],
-#   [0. ,0. , 0. ,1. , -2., -1. , -1., 1., 10.],
-# ])#ótimo 50
-# simplex = Simplex(4, 4, teste)
-
-# teste = np.array([
-#   [0. ,0. , 0. ,0. , 1., 1. , 1., 0.],
-#   [1. ,0. , 0. ,0. , 1., 0. , 0., -1.],
-#   [0. ,1. , 0. ,0. , 0., 1. , 0. , -1.],
-#   [0. ,0. , 1. ,0. , 0., 0. , 1., -1.],
-#   [0. ,0. , 0. ,1. , 1., 1. , 1., -1.],
-# ])#inviavel 
-# simplex = Simplex(4, 3, teste)
-
-
-# teste = np.array([
-#   [0. ,0. , 0. ,0. , 1., 1. , 1., 0.],
-#   [1. ,0. , 0. ,0. , 1., 0. , 0., -1.],
-#   [0. ,1. , 0. ,0. , 0., 1. , 0. , -1.],
-#   [0. ,0. , 1. ,0. , 0., 0. , 1., -1.],
-#   [0. ,0. , 0. ,1. , 1., 1. , 1., -1.],
-# ])#inviavel 
-# simplex = Simplex(8, 6, teste)
+  print(np.around(matrixAuxiliar[0][0:n],7))

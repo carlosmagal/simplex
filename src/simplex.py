@@ -24,20 +24,11 @@ class Simplex:
         else:
           return False
 
-      #decidindo qual vai ser o pivo
       pivotRow = self.getPivotRow(pivotColumn)
       if pivotRow == None: 
-        print('nao tem nao-negativos na coluna')
         return False
 
       self.iteration(pivotRow, pivotColumn)
-
-#COISAS DO SIMPLEX
-#negativar a primeira linha da matriz
-#ver se tem negativo no b, ver se linha é toda negativa
-#comecar a pivotar a partir do primeiro item negativo na matriz
-#sabendo a coluna que vai ser pivotada, dividir todos os itens pelo último numero da linha
-#pegar o menor e pivotar
 
   def run(self):
     print('TA NO RUN----------------')
@@ -47,23 +38,19 @@ class Simplex:
       
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
-        print('nao tem numero negativo no c')
-        break
+        print(self.matrix)
+        return True
 
-      #decidindo qual vai ser o pivo
       pivotRow = self.getPivotRow(pivotColumn)
       if pivotRow == None: 
         print('nao tem nao-negativos na coluna')
-        break
+        print(self.matrix)
+        return False
 
       self.iteration(pivotRow, pivotColumn)
     
-    print(self.matrix)
 
-  
   def multiplyRow(self, index, multiplier):
-    #multiplicando c por -1 e pegando o index da coluna pra pivotar
-    #caso o pivo fique None é pq nao tem negati
     pivotIndex = None
     for i in range(self.columnSize):
       if(self.matrix[index][i] != 0):
@@ -146,10 +133,47 @@ def auxiliar(n, m, matrix):
 
   for i in range(n):#tableau
     matrixAuxiliar = np.vstack([matrixAuxiliar, np.concatenate((identity[i], matrixWithIdentity[i]))])
-
+  print(matrixAuxiliar)
+  print('em cima')
   for i in range(n+n+m+1):#pivoteando a primeira linha, pra deixar canonico
     for j in range(n+1):
       if(j == 0): continue
       matrixAuxiliar[0][i] = matrixAuxiliar[0][i] - matrixAuxiliar[j][i]
-  
+  print(matrixAuxiliar)
+  # quit()
   return matrixAuxiliar
+
+
+def printOtimo(matrix, n, m):
+  maxZeros = n-1
+  maxOnes = 1
+
+  otimo = np.array([])
+
+  for i in range(n, n+m):
+    if matrix[0][i] != 0:
+      otimo = np.append(otimo, [0])
+      continue
+    else:
+      maxZeros = n-1
+      maxOnes = 1
+      rowIndex = 0
+      for j in range(1, n+1):
+        if matrix[j][i] == 0:
+          maxZeros = maxZeros-1
+        elif matrix[j][i] == 1:
+          maxOnes = maxOnes-1
+          rowIndex = j
+        else:
+          otimo = np.append(otimo, [0])
+          break
+      else:
+        if maxOnes == 0 and maxZeros == 0:# se for base
+          otimo = np.append(otimo,matrix[rowIndex][n+m])
+        else:
+          otimo = np.append(otimo, [0])
+        
+        # maxZeros = n-1
+        # maxOnes = 1
+  
+  print(np.around(otimo,7))
