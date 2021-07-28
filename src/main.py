@@ -59,7 +59,7 @@ if(simplex1.runAuxiliar()):
 
   print(matrixAuxiliar)
 
-  matrixAuxiliar[0] = arrayC # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
+  matrixAuxiliar[0] = arrayC*-1 # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
   print(matrixAuxiliar)
 
   #BO
@@ -85,15 +85,16 @@ if(simplex1.runAuxiliar()):
       maxOnes = 1
 
   print(matrixAuxiliar)
+  # quit()
   simplex2 = Simplex(n, m, matrixAuxiliar, matrixAuxiliar)
   simplex2.run()
 
+  print('otima')
+  print(matrixAuxiliar[0][n+m])
+
 else:
   print('inviavel')
-
-
-
-
+  print(np.around(matrixAuxiliar,2))
 
 # teste = np.array([
 #   [0. ,0. , 0. ,2. ,4. ,8. , 0.],

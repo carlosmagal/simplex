@@ -9,12 +9,6 @@ class Simplex:
     self.columnSize = m + n + 1
     self.matrixAuxiliar = matrixAuxiliar
     self.columnSizeAuxiliar = m + n + 1
-    
-  def isCanonical(tableau):
-    return True
-
-  def toCanonical(self):
-    print(self.matrix)
 
   def runAuxiliar(self):
     
@@ -22,7 +16,10 @@ class Simplex:
       
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
-        if(self.matrix[0][self.columnSizeAuxiliar-1] == 0):
+        print(self.matrix[0][self.columnSizeAuxiliar-1])
+        print('----------------')
+        print(self.matrix)
+        if(np.isclose(self.matrix[0][self.columnSizeAuxiliar-1], 0)):
           return True
         else:
           return False
@@ -43,8 +40,8 @@ class Simplex:
 #pegar o menor e pivotar
 
   def run(self):
-    
-    pivotColumn = self.multiplyRow(0, -1)
+    print('TA NO RUN----------------')
+    # pivotColumn = self.multiplyRow(0, -1)
 
     while True:
       
@@ -81,11 +78,18 @@ class Simplex:
       self.matrix[index][i] = self.matrix[index][i] + ( multiplier * self.matrix[index2][i])
   
   def getPivotColumn(self):
+    lower = 1000000
+    pivotColumn = None
     for i in range(self.columnSize-1):
       if(self.matrix[0][i] < 0 and i >= self.n):
+        # if lower >= self.matrix[0][i]:
+        #   lower = self.matrix[0][i]
+        # pivotColumn = i
         print(self.matrix[0][i])
         return i
-    return None
+
+    # print('pivo: ', pivotColumn)
+    return pivotColumn
 
   def getPivotRow(self, column):
     lowerRatio = float('inf')
@@ -105,10 +109,11 @@ class Simplex:
   # o iteration vai fazer a pivotação
   # vai ser chamado na runSimplex equanto nao tiver resultado
   def iteration(self, row, column):
+    # self.matrix = np.around(self.matrix,3)
     pivot = self.matrix[row][column]
 
     print(row, column)
-    print(self.matrix)
+    print(np.round(self.matrix,2))
     for i in range(self.n + 1):
       if i == row : continue #linha do pivo 
       else: #zerando as outras
@@ -118,7 +123,6 @@ class Simplex:
     if pivot != 1:
       self.multiplyRow(row, 1/pivot)
 
-    # print(self.matrix)
 
 
 
@@ -129,9 +133,6 @@ def auxiliar(n, m, matrix):
     if(matrix[i][m] < 0):
       for j in range(m+1):
         matrix[i][j] = matrix[i][j] * -1
-
-  # print(matrix)
-  # print('------------------------')
 
   matrixWithIdentity = np.insert(matrix, m, np.identity(n), axis=1)
 
@@ -146,16 +147,9 @@ def auxiliar(n, m, matrix):
   for i in range(n):#tableau
     matrixAuxiliar = np.vstack([matrixAuxiliar, np.concatenate((identity[i], matrixWithIdentity[i]))])
 
-  # print(matrixAuxiliar)
-
   for i in range(n+n+m+1):#pivoteando a primeira linha, pra deixar canonico
     for j in range(n+1):
       if(j == 0): continue
       matrixAuxiliar[0][i] = matrixAuxiliar[0][i] - matrixAuxiliar[j][i]
-
-  # print(matrixAuxiliar)
-
+  
   return matrixAuxiliar
-
-
-
