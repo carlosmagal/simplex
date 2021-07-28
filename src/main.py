@@ -41,36 +41,31 @@ def pivotingAuxiliar(matrix, n, m, column):
 
 n, m, matrix, matrixAuxiliar, arrayC = getInput()
 
-simplex1 = Simplex(n, m+n, matrixAuxiliar, matrix)# simplex fase 1, monta a auxiliar
+simplex1 = Simplex(n, m+n, matrixAuxiliar, matrix)
 
-if(simplex1.runAuxiliar()):
-  print('tem zero no bagui')
-	# pegar a auxiliar, retirar a matriz que foi colocada no meio(retirar a partir da m, n vezes)
-	# trocar a linha c pela original
-	# pivotear a primeira linha, para ficar 0 em cima das bases
+#0 otimo
+#1 inviavel
+#2 ilimitada
+result = simplex1.runAuxiliar()#rodando simplex fase 1
 
-  for i in range(m+n, n+n+m):
+if result == 0:
+
+  for i in range(m+n, n+n+m):# deletando coluna de variaveis auxiliares
     matrixAuxiliar = np.delete(matrixAuxiliar, n+m, 1)
 
-  for i in range(n):
+  for i in range(n):#deletando vero da auxiliar
     matrixAuxiliar = np.delete(matrixAuxiliar, 0, 1)
 
-  matrixAuxiliar = np.append(np.vstack([np.zeros(n), np.identity(n)]), matrixAuxiliar, axis=1)
-  # quit()
+  matrixAuxiliar = np.append(np.vstack([np.zeros(n), np.identity(n)]), matrixAuxiliar, axis=1)#colocando novo vero na matriz
 
-  print(matrixAuxiliar[0])
-  arrayC = arrayC * -1
-  # arrayC[0:n] = matrixAuxiliar[0][0:n] # passando VERO pro c original
-  print(arrayC)
+  arrayC = arrayC * -1#multiplicando c por -1
 
-  matrixAuxiliar[0] = arrayC # talvez vai ser necessario pegar os n primeiros numeros da matriz auxiliar
-  print(matrixAuxiliar)
+  matrixAuxiliar[0] = arrayC #colocando c linha 0 da matriz
 
-  #pego a matriz a partir da linha n, e vejo a coluna que tem um '1' e n-1 '0'
   maxZeros = n-1
   maxOnes = 1
   
-  for i in range(n, n+m+1):
+  for i in range(n, n+m+1):#pivotendo a linha 0 de acordo com as bases
     for j in range(1,n+1):
       if matrixAuxiliar[j][i] == 0:
         maxZeros = maxZeros-1
@@ -80,16 +75,13 @@ if(simplex1.runAuxiliar()):
         break
     else:
       if maxOnes == 0 and maxZeros == 0:
-        print('pivotar coluna ', i)
         matrixAuxiliar = pivotingAuxiliar(matrixAuxiliar, n, m, i)
       maxZeros = n-1
       maxOnes = 1
 
-  print(matrixAuxiliar)
-  # quit()
   simplex2 = Simplex(n, m, matrixAuxiliar, matrixAuxiliar)
-
-  if simplex2.run():
+  
+  if simplex2.run():#rodando simplex fase 2
   
     print('otima')
     print(np.around(matrixAuxiliar[0][n+m],7))
@@ -103,6 +95,11 @@ if(simplex1.runAuxiliar()):
     print(np.around(matrixAuxiliar[0][0:n],7))
 
 
-else:
+elif result == 1:
   print('inviavel')
+  print(np.around(matrixAuxiliar[0][0:n],7))
+
+else:
+  print('ilimitada')
+  printOtimo(matrixAuxiliar, n, m)
   print(np.around(matrixAuxiliar[0][0:n],7))
