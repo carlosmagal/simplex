@@ -98,7 +98,7 @@ class Simplex:
 
 
 
-
+#monta a pl auxiliar
 def auxiliar(n, m, matrix):
 
   for i in range(n):#multiplicando por -1, qnd b<0
@@ -126,7 +126,7 @@ def auxiliar(n, m, matrix):
 
   return matrixAuxiliar
 
-
+#printa o otimo
 def printOtimo(matrix, n, m):
   maxZeros = n-1
   maxOnes = 1
@@ -157,3 +157,36 @@ def printOtimo(matrix, n, m):
           otimo = np.append(otimo, [0])
         
   print(np.around(otimo,7))
+
+
+#input
+def getInput():
+  n, m = map(int, input().split())
+
+  arrayC = np.array([input().strip().split()], float)#pegando o c normal
+  arrayC = np.append(np.zeros(n), arrayC)#colocando n zeros antes do c
+  arrayC = np.append(arrayC, [0])#colocando um 0 no final do c
+
+  matrixInput = np.array([input().strip().split() for _ in range(n)], int)
+
+  matrixAuxiliar = auxiliar(n, m, matrixInput)
+
+  identity = np.identity(n)
+  matrix = np.array(arrayC)
+
+  for i in range(n):#tableau
+    matrix = np.vstack([matrix, np.concatenate((identity[i],matrixInput[i]))])
+
+  return n, m, matrix, matrixAuxiliar, arrayC
+
+#pivoteamento da pl auxiliar
+def pivotingAuxiliar(matrix, n, m, column):
+  if(matrix[0][column] == 0): return matrix
+
+  for i in range( n+1):
+    if(matrix[i][column] == 1):#pegando index da linha do pivo
+      multiplier = -1 * matrix[0][column]
+      for j in range(n+m+1):
+        matrix[0][j] = matrix[0][j] + (multiplier*matrix[i][j])
+
+  return matrix
