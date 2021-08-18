@@ -11,7 +11,7 @@ class Simplex:
     self.columnSizeAuxiliar = m + n + 1
 
   def runAuxiliar(self):#fase 1
-    print('\n\n')
+    # print('\n\n')
     while True:
       #selecionando coluna para ser pivoteada
       pivotColumn = self.getPivotColumn()
@@ -156,7 +156,7 @@ def printOtimo(matrix, n, m):
         else:
           otimo = np.append(otimo, [0])
         
-  print(np.around(otimo,7))
+  print(*np.around(otimo,7))
 
 
 #input

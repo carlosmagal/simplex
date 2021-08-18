@@ -46,19 +46,19 @@ if result == 0:#otimo
     print(np.around(matrixAuxiliar[0][n+m],7))
     # print(otimo.transpose())
     printOtimo(matrixAuxiliar, n, m)
-    print(np.around(matrixAuxiliar[0][0:n],7))
+    print(*np.around(matrixAuxiliar[0][0:n],7))
 
   else: 
     print('ilimitada')
     printOtimo(matrixAuxiliar, n, m)
-    print(np.around(matrixAuxiliar[0][0:n],7))
+    print(*np.around(matrixAuxiliar[0][0:n],7))
 
 
 elif result == 1:#inviavel
   print('inviavel')
-  print(np.around(matrixAuxiliar[0][0:n],7))
+  print(*np.around(matrixAuxiliar[0][0:n],7))
 
 else:#ilimitada
   print('ilimitada')
   printOtimo(matrixAuxiliar, n, m)
-  print(np.around(matrixAuxiliar[0][0:n],7))
+  print(*np.around(matrixAuxiliar[0][0:n],7))
