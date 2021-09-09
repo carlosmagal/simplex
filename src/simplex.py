@@ -14,6 +14,10 @@ class Simplex:
     # print('\n\n')
     while True:
       #selecionando coluna para ser pivoteada
+
+      if self.isUnlimited(self.n, self.columnSize-1):
+        return -1
+
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
         if(np.isclose(self.matrix[0][self.columnSizeAuxiliar-1], 0)):
@@ -26,12 +30,19 @@ class Simplex:
       if pivotRow == None: 
         return 2
 
-      #pivotenado
+      #pivoteando
       self.iteration(pivotRow, pivotColumn)
 
   def run(self):#fase 2
-
+    #EM TODA EXECUCAO TENHO Q CHECAR SE ELA É ILIMITADA,
+    #ELE PODE TER A LINHA TODA NEGATIVA EM UMA COLUNA DIFERENTE DA DO PIVO
     while True:
+      
+      #checa se é ilimitada
+      if self.isUnlimited(self.n, self.columnSize-1):
+        print('aaaaaaaaaaaaaaa')
+        return False
+
       #coluna do pivo
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
@@ -61,11 +72,13 @@ class Simplex:
       self.matrix[index][i] = self.matrix[index][i] + ( multiplier * self.matrix[index2][i])
   
   def getPivotColumn(self):
-    lower = 1000000
+    lower = -1000000
     pivotColumn = None
     for i in range(self.columnSize-1):
-      if(self.matrix[0][i] < 0 and i >= self.n):
+      if(self.matrix[0][i] < 0 and self.matrix[0][i] > lower and i >= self.n):
         return i
+        lower = self.matrix[0][i]
+        pivotColumn = i
 
     return pivotColumn
 
@@ -96,29 +109,39 @@ class Simplex:
     if pivot != 1:
       self.multiplyRow(row, 1/pivot)
 
+  def isUnlimited(self, n, limit):
+    for j in range(n, limit):
+      if self.matrix[0][j] < 0:
+        unlimited = True
+        for i in range(1, n+1):
+          if self.matrix[i][j] > 0:
+            unlimited = False
+        
+        if unlimited:
+          return True
+
+    return False
+
 
 
 #monta a pl auxiliar
 def auxiliar(n, m, matrix):
 
+  matrix = np.concatenate((np.identity(n), matrix), axis=1)
+
   for i in range(n):#multiplicando por -1, qnd b<0
-    if(matrix[i][m] < 0):
-      for j in range(m+1):
+    if(matrix[i][m+n] < 0):
+      for j in range(m+n+1):
         matrix[i][j] = matrix[i][j] * -1
 
-  matrixWithIdentity = np.insert(matrix, m, np.identity(n), axis=1)
+  matrixWithIdentity = np.insert(matrix, m+n, np.identity(n), axis=1)
 
   arrayC = np.append(np.zeros(m),np.full((n), 1))
   arrayC = np.append(np.zeros(n), arrayC)#colocando n zeros antes do c
   arrayC = np.append(arrayC, [0])#colocando um 0 no final do c
 
-  matrixAuxiliar = np.array(arrayC)
+  matrixAuxiliar = np.vstack([arrayC,matrixWithIdentity])
 
-  identity = np.identity(n)
-
-  for i in range(n):#tableau
-    matrixAuxiliar = np.vstack([matrixAuxiliar, np.concatenate((identity[i], matrixWithIdentity[i]))])
-  
   for i in range(n+n+m+1):#pivoteando a primeira linha, pra deixar canonico
     for j in range(n+1):
       if(j == 0): continue
@@ -127,7 +150,7 @@ def auxiliar(n, m, matrix):
   return matrixAuxiliar
 
 #printa o otimo
-def printOtimo(matrix, n, m):
+def printOtimo(matrix, n, m, limit):
   maxZeros = n-1
   maxOnes = 1
 
@@ -156,7 +179,7 @@ def printOtimo(matrix, n, m):
         else:
           otimo = np.append(otimo, [0])
         
-  print(*np.around(otimo,7))
+  print(*np.around(otimo[0:limit],7))
 
 
 #input
@@ -165,11 +188,12 @@ def getInput():
 
   arrayC = np.array([input().strip().split()], float)#pegando o c normal
   arrayC = np.append(np.zeros(n), arrayC)#colocando n zeros antes do c
-  arrayC = np.append(arrayC, [0])#colocando um 0 no final do c
+  arrayC = np.append(arrayC, np.zeros(n+1))#colocando um 0 no final do c
 
   matrixInput = np.array([input().strip().split() for _ in range(n)], int)
+  matrixInput = np.insert(matrixInput, m, np.identity(n), axis = 1)#deixando canonico(Ax=b)
 
-  matrixAuxiliar = auxiliar(n, m, matrixInput)
+  matrixAuxiliar = auxiliar(n, n+m, matrixInput)
 
   identity = np.identity(n)
   matrix = np.array(arrayC)
