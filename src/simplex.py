@@ -11,13 +11,12 @@ class Simplex:
     self.columnSizeAuxiliar = m + n + 1
 
   def runAuxiliar(self):#fase 1
-    # print('\n\n')
     while True:
-      #selecionando coluna para ser pivoteada
 
       if self.isUnlimited(self.n, self.columnSize-1):
         return -1
 
+      #selecionando coluna para ser pivoteada
       pivotColumn = self.getPivotColumn()
       if pivotColumn == None: 
         if(np.isclose(self.matrix[0][self.columnSizeAuxiliar-1], 0)):
@@ -34,13 +33,10 @@ class Simplex:
       self.iteration(pivotRow, pivotColumn)
 
   def run(self):#fase 2
-    #EM TODA EXECUCAO TENHO Q CHECAR SE ELA É ILIMITADA,
-    #ELE PODE TER A LINHA TODA NEGATIVA EM UMA COLUNA DIFERENTE DA DO PIVO
     while True:
       
       #checa se é ilimitada
       if self.isUnlimited(self.n, self.columnSize-1):
-        print('aaaaaaaaaaaaaaa')
         return False
 
       #coluna do pivo
@@ -116,11 +112,47 @@ class Simplex:
         for i in range(1, n+1):
           if self.matrix[i][j] > 0:
             unlimited = False
-        
-        if unlimited:
-          return True
+        else:
+          if unlimited:
+            print('ilimitada')
+            printOtimo(self.matrix, self.n, self.m, self.m-self.n)
+            self.printUnlimited(j, limit-n)
+            return True
 
     return False
+  
+  def printUnlimited(self, column, limit):
+    certificado = np.array([])
+    for i in range(self.n, limit):
+      if i == column:#index da coluna problema recebe 1
+        certificado = np.append(certificado, [1])
+        continue
+      if self.matrix[0][i] == 0:#se for base, recebe valor da linha
+        isBase, baseRow = self.isBase(i)
+        if isBase:#checa se a coluna é base
+          certificado = np.append(certificado, [self.matrix[baseRow][column]*-1])
+          continue
+      
+      #se nao for base recebe 0
+      certificado = np.append(certificado, [0])
+    
+    print(*np.around(certificado, 7))
+
+  def isBase(self, column):
+    maxZeros = self.n-1
+    maxOnes = 1
+    baseRow = None
+    for i in range(1, self.n+1):
+      if self.matrix[i][column] == 0:
+        maxZeros = maxZeros-1
+      elif self.matrix[i][column] == 1:
+        maxOnes = maxOnes-1
+        baseRow = i
+
+    if maxOnes == 0 and maxZeros == 0:
+      return True, baseRow
+
+    return False, None
 
 
 

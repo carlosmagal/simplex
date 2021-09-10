@@ -13,11 +13,6 @@ def main():
     for i in range(m+n+n, n+n+n+m):# deletando coluna de variaveis auxiliares
       matrixAuxiliar = np.delete(matrixAuxiliar, n+n+m, 1)
 
-    # for i in range(n):#deletando vero da auxiliar
-    #   matrixAuxiliar = np.delete(matrixAuxiliar, 0, 1)
-
-    # matrixAuxiliar = np.append(np.vstack([np.zeros(n), np.identity(n)]), matrixAuxiliar, axis=1)#colocando novo vero na matriz
-
     arrayC = arrayC * -1#multiplicando c por -1
 
     matrixAuxiliar[0] = arrayC #colocando c linha 0 da matriz
@@ -42,8 +37,6 @@ def main():
     simplex2 = Simplex(n, n+m, matrixAuxiliar, matrixAuxiliar)
     
     if simplex2.run():#rodando simplex fase 2
-      # print(matrixAuxiliar)
-      print(np.around(matrixAuxiliar,7))
       
       print('otima')
       print(np.around(matrixAuxiliar[0][n+n+m],7))
@@ -52,19 +45,13 @@ def main():
       print(*np.around(matrixAuxiliar[0][0:n],7))
 
     else: 
-      print('ilimitada')
-      printOtimo(matrixAuxiliar, n, m+n, m)
-      print(*np.around(matrixAuxiliar[0][0:n],7))
-      # print(matrixAuxiliar)
-
+      quit()
 
   elif result == 1:#inviavel
     print('inviavel')
     print(*np.around(matrixAuxiliar[0][0:n],7))
 
   else:#ilimitada
-    print('ilimitada')
-    printOtimo(matrixAuxiliar, n, m+n, m)
-    print(*np.around(matrixAuxiliar[0][0:n],7))
+    quit()
 
 main()
